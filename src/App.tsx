@@ -13,7 +13,7 @@ import "./styles/global.css";
 import HomeHeader from "./components/HomeHeader";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { DateSwitcher } from "./components/DateSwitcher";
-
+import { DailyStats } from "./components/DailyStats";
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
@@ -40,6 +40,16 @@ export default function App() {
         <StatusBar style="auto" />
         <HomeHeader />
         <DateSwitcher />
+        <View className="mt-4">
+          <DailyStats
+            calories={{ goal: 2000, current: 1500 }}
+            proteins={{ goal: 100, current: 80 }}
+            carbohydrates={{ goal: 200, current: 150 }}
+            fats={{ goal: 50, current: 40 }}
+          />
+        </View>
+
+        <View className="mt-7 h-px bg-gray-200" />
       </SafeAreaProvider>
     </View>
   );
