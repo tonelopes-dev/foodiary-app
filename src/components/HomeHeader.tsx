@@ -8,9 +8,7 @@ export default function HomeHeader() {
     <View className="bg-lime-400 pt-10">
       <SafeAreaView className="flex-row items-center justify-between px-4">
         <View>
-          <Text className="font-sans-regular text-sm text-gray-700">
-            Olá, 🚀
-          </Text>
+          <Text className="font-sans-regular text-sm text-gray-700">Olá,</Text>
           <Text className="font-sans-semibold text-base text-black-700">
             Tone Monte
           </Text>
