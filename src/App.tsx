@@ -1,19 +1,17 @@
-import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
-import { StatusBar } from "expo-status-bar";
-import { Text, View } from "react-native";
 import {
-  useFonts,
   HostGrotesk_400Regular,
   HostGrotesk_500Medium,
   HostGrotesk_600SemiBold,
   HostGrotesk_700Bold,
+  useFonts,
 } from "@expo-google-fonts/host-grotesk";
-import "./styles/global.css";
-import HomeHeader from "./components/HomeHeader";
+import * as SplashScreen from "expo-splash-screen";
+import { StatusBar } from "expo-status-bar";
+import { useEffect } from "react";
+import { View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { DateSwitcher } from "./components/DateSwitcher";
-import { DailyStats } from "./components/DailyStats";
+import { Home } from "./screens/Home";
+import "./styles/global.css";
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
@@ -38,18 +36,7 @@ export default function App() {
     <View className="flex-1 bg-white">
       <SafeAreaProvider>
         <StatusBar style="auto" />
-        <HomeHeader />
-        <DateSwitcher />
-        <View className="mt-4">
-          <DailyStats
-            calories={{ goal: 2000, current: 1500 }}
-            proteins={{ goal: 100, current: 80 }}
-            carbohydrates={{ goal: 200, current: 150 }}
-            fats={{ goal: 50, current: 40 }}
-          />
-        </View>
-
-        <View className="mt-7 h-px bg-gray-200" />
+        <Home />
       </SafeAreaProvider>
     </View>
   );
