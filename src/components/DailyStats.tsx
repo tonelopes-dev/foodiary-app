@@ -1,6 +1,6 @@
 import { Text, View } from "react-native";
 import Svg, { Path } from "react-native-svg";
-import { cn } from "@/utils/cs";
+import { cn } from "@/utils/cn";
 interface IArcProps {
   percentage: number;
   color: string;

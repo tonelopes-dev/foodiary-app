@@ -6,6 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function HomeHeader() {
   return (
     <View className="bg-lime-400 pt-10">
+
       <SafeAreaView className="flex-row items-center justify-between px-4">
         <View>
           <Text className="font-sans-regular text-sm text-gray-700">Olá,</Text>
