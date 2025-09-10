@@ -1,66 +1,102 @@
+import { useQuery } from "@tanstack/react-query";
+import { useFocusEffect } from "expo-router";
+import { useCallback, useMemo, useState } from "react";
 import { FlatList, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useAuth } from "@/hooks/useAuth";
+import { httpClient } from "@/services/httpClient";
 import { DailyStats } from "./DailyStats";
 import { DateSwitcher } from "./DateSwitcher";
 import { MealCard } from "./MealCard";
 
-const meals = [
-  {
-    id: "1",
-    name: "Café da manhã",
-    time: "07:00",
-    description: "Omelete com queijo e tomate",
-    withinDiet: true,
-  },
-  {
-    id: "2",
-    name: "Lanche da manhã",
-    time: "10:00",
-    description: "Iogurte com granola",
-    withinDiet: true,
-  },
-  {
-    id: "3",
-    name: "Almoço",
-    time: "12:00",
-    description: "Frango grelhado com salada",
-    withinDiet: true,
-  },
-  {
-    id: "4",
-    name: "Lanche da tarde",
-    time: "15:00",
-    description: "Maçã com pasta de amendoim",
-    withinDiet: true,
-  },
-  {
-    id: "5",
-    name: "Jantar",
-    time: "19:00",
-    description: "Salmão com brócolis",
-    withinDiet: true,
-  },
-];
+type Meal = {
+  name: string;
+  id: string;
+  icon: string;
+  foods: {
+    name: string;
+    quantity: string;
+    calories: number;
+    proteins: number;
+    carbohydrates: number;
+    fats: number;
+  }[];
+  createdAt: string;
+};
 
-function MealsListHeader() {
+interface IMealsListHeaderProps {
+  currentDate: Date;
+  meals: Meal[];
+  onPreviousDate(): void;
+  onNextDate(): void;
+}
+
+function MealsListHeader({
+  meals,
+  currentDate,
+  onNextDate,
+  onPreviousDate,
+}: IMealsListHeaderProps) {
+  const { user } = useAuth();
+
+  const totals = useMemo(() => {
+    let calories = 0;
+    let proteins = 0;
+    let carbohydrates = 0;
+    let fats = 0;
+
+    for (const meal of meals) {
+      for (const food of meal.foods) {
+        calories += food.calories;
+        proteins += food.proteins;
+        carbohydrates += food.carbohydrates;
+        fats += food.fats;
+      }
+    }
+
+    return {
+      calories,
+      proteins,
+      carbohydrates,
+      fats,
+    };
+  }, [meals]);
+
   return (
-    <>
-      <DateSwitcher />
-      <View className="mt-4">
+    <View>
+      <DateSwitcher
+        currentDate={currentDate}
+        onNextDate={onNextDate}
+        onPreviousDate={onPreviousDate}
+      />
+
+      <View className="mt-2">
         <DailyStats
-          calories={{ goal: 2000, current: 1500 }}
-          proteins={{ goal: 100, current: 80 }}
-          carbohydrates={{ goal: 200, current: 150 }}
-          fats={{ goal: 50, current: 40 }}
+          calories={{
+            current: totals.calories,
+            goal: user!.calories,
+          }}
+          proteins={{
+            current: totals.proteins,
+            goal: user!.proteins,
+          }}
+          carbohydrates={{
+            current: totals.carbohydrates,
+            goal: user!.carbohydrates,
+          }}
+          fats={{
+            current: totals.fats,
+            goal: user!.fats,
+          }}
         />
       </View>
 
       <View className="mt-7 h-px bg-gray-200" />
 
       <Text className="m-5 font-sans-medium text-base tracking-[1.28px] text-black-700">
-        REFEIÇÕES DO DIA
+        REFEIÇÕES
       </Text>
-    </>
+    </View>
   );
 }
 
@@ -71,21 +107,77 @@ function Separator() {
 export function MealsList() {
   const { bottom } = useSafeAreaInsets();
 
+  const [currentDate, setCurrentDate] = useState(new Date());
+
+  const dateParam = useMemo(() => {
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+    const day = String(currentDate.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  }, [currentDate]);
+
+  const { data: meals, refetch } = useQuery({
+    queryKey: ["meals", dateParam],
+    staleTime: 15_000,
+    queryFn: async () => {
+      const { data } = await httpClient.get<{ meals: Meal[] }>("/meals", {
+        params: {
+          date: dateParam,
+        },
+      });
+
+      return data.meals;
+    },
+  });
+
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch])
+  );
+
+  function handlePreviousDate() {
+    setCurrentDate((prevState) => {
+      const newDate = new Date(prevState);
+      newDate.setDate(newDate.getDate() - 1);
+
+      return newDate;
+    });
+  }
+
+  function handleNextDate() {
+    setCurrentDate((prevState) => {
+      const newDate = new Date(prevState);
+      newDate.setDate(newDate.getDate() + 1);
+
+      return newDate;
+    });
+  }
+
   return (
     <FlatList
       data={meals}
-      contentContainerStyle={{ paddingBottom: bottom + 80 }}
-      keyExtractor={(item) => item.id}
-      ListHeaderComponent={MealsListHeader}
+      contentContainerStyle={{ paddingBottom: 80 + bottom + 16 }}
+      keyExtractor={(meal) => meal.id}
+      ListEmptyComponent={<Text>Nenhuma refeição cadastrada...</Text>}
+      ListHeaderComponent={
+        <MealsListHeader
+          currentDate={currentDate}
+          meals={meals ?? []}
+          onNextDate={handleNextDate}
+          onPreviousDate={handlePreviousDate}
+        />
+      }
       ItemSeparatorComponent={Separator}
-      renderItem={({ item }) => (
-        <View className="px-5">
+      renderItem={({ item: meal }) => (
+        <View className="mx-5">
           <MealCard
-            id={item.id}
-            name={item.name}
-            time={item.time}
-            description={item.description}
-            withinDiet={item.withinDiet}
+            id={meal.id}
+            name={meal.name}
+            icon={meal.icon}
+            foods={meal.foods}
+            createdAt={new Date(meal.createdAt)}
           />
         </View>
       )}
