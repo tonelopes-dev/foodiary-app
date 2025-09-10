@@ -21,7 +21,7 @@ import { Alert, Modal, Text, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 import { router } from "expo-router";
-import { useCreateMeal } from "../hooks/useCreateMeal";
+import { useCreateMeal } from "@/hooks/useCreateMeal";
 import { colors } from "../styles/colors";
 import { cn } from "../utils/cn";
 import { Button } from "./Button";
@@ -30,8 +30,6 @@ interface IAudioModalProps {
   open: boolean;
   onClose: () => void;
 }
-
-
 
 export function AudioModal({ onClose, open }: IAudioModalProps) {
   const [audioUri, setAudioUri] = useState<null | string>(null);
