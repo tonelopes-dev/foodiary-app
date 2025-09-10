@@ -7,7 +7,7 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 import { router } from "expo-router";
 import { useCreateMeal } from "@/hooks/useCreateMeal";
-import { colors } from "@/styles/colors";
+import { colors } from "../styles/colors";
 import { Button } from "./Button";
 
 interface ICameraModalProps {
