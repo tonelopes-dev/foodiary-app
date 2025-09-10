@@ -1,22 +1,29 @@
-import { colors } from "@/styles/colors";
 import { LogOutIcon } from "lucide-react-native";
-import { View, Text, TouchableOpacity } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useAuth } from "@/hooks/useAuth";
+import { colors } from "../styles/colors";
 
-export default function HomeHeader() {
+export function HomeHeader() {
+  const { signOut, user } = useAuth();
+
   return (
-    <View className="bg-lime-400 pt-10">
-
+    <View className="h-[130px] bg-lime-400">
       <SafeAreaView className="flex-row items-center justify-between px-4">
         <View>
-          <Text className="font-sans-regular text-sm text-gray-700">Olá,</Text>
+          <Text className="font-sans-regular text-sm text-gray-700">
+            Olá, 👋
+          </Text>
           <Text className="font-sans-semibold text-base text-black-700">
-            Tone Monte
+            {user?.name}
           </Text>
         </View>
 
-        <TouchableOpacity className="size-12 items-center justify-center">
-          <LogOutIcon size={20} color={colors.gray[700]} />
+        <TouchableOpacity
+          className="size-12 items-center justify-center"
+          onPress={signOut}
+        >
+          <LogOutIcon size={20} color={colors.black[700]} />
         </TouchableOpacity>
       </SafeAreaView>
     </View>
