@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="public/banner-foodiary.png" alt="Foodiary Mobile App Banner" width="800"/>
+  <img src="https://tone-monte-portfolio-v3.s3.us-east-1.amazonaws.com/projects/banner-foodiary.png" alt="Foodiary Mobile App Banner" width="800"/>
   
   # 📱 Foodiary Mobile App
   
