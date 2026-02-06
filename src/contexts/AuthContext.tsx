@@ -106,6 +106,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await AsyncStorage.removeItem(TOKEN_STORAGE_KEY);
   }, []);
 
+  console.log("[AuthContext] Token:", !!token, "isLoadingToken:", isLoadingToken, "isLoadingUser:", isLoadingUser, "user:", !!user);
+
   return (
     <AuthContext.Provider
       value={{
