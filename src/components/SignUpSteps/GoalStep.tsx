@@ -13,6 +13,7 @@ export function GoalStep({ onNext }: { onNext?: () => void }) {
         <OptionsSelector
           value={field.value}
           onChange={(value) => {
+            console.log("Selected goal value:", value);
             field.onChange(value);
             onNext?.();
           }}
@@ -20,17 +21,17 @@ export function GoalStep({ onNext }: { onNext?: () => void }) {
             {
               icon: "🥦",
               title: "Perder peso",
-              value: "lose",
+              value: "lose_weight",
             },
             {
               icon: "🍍",
               title: "Manter o peso",
-              value: "maintain",
+              value: "maintain_weight",
             },
             {
               icon: "🥩",
               title: "Ganhar peso",
-              value: "gain",
+              value: "gain_weight",
             },
           ]}
         />

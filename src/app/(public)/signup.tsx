@@ -79,36 +79,81 @@ export default function SignUp() {
     setCurrentStepIndex((prevState) => prevState - 1);
   }
 
-  function handleNextStep() {
-    setCurrentStepIndex((prevState) => prevState + 1);
+  async function handleNextStep() {
+    const fieldsByStep = [
+      ["goal"],
+      ["gender"],
+      ["birthDate"],
+      ["height"],
+      ["weight"],
+      ["activityLevel"],
+      ["name", "email", "password"],
+    ];
+
+    const currentStepFields = fieldsByStep[currentStepIndex] as any;
+    const isValid = await form.trigger(currentStepFields);
+
+    if (isValid) {
+      setCurrentStepIndex((prevState) => prevState + 1);
+    }
   }
 
-  const { signUp } = useAuth();
+  const { signUp, signIn } = useAuth();
 
-  const handleSubmit = form.handleSubmit(async (formData) => {
-    try {
-      const [day, month, year] = formData.birthDate.split("/");
+  const handleSubmit = form.handleSubmit(
+    async (formData) => {
+      try {
+        const [day, month, year] = formData.birthDate.split("/");
+        const birthDateFormatted = `${year}-${month}-${day}`;
 
-      await signUp({
-        height: Number(formData.height),
-        weight: Number(formData.weight),
-        activityLevel: Number(formData.activityLevel),
-        gender: formData.gender,
-        goal: formData.goal,
-        birthDate: `${year}-${month}-${day}`,
-        account: {
-          email: formData.email,
-          name: formData.name,
-          password: formData.password,
-        },
-      });
-    } catch (error) {
-      if (isAxiosError(error)) {
-        console.log(JSON.stringify(error.response?.data, null, 2));
+        await signUp({
+          height: Number(formData.height),
+          weight: Number(formData.weight),
+          activityLevel: Number(formData.activityLevel),
+          gender: formData.gender,
+          goal: formData.goal,
+          birthDate: birthDateFormatted,
+          account: {
+            email: formData.email,
+            name: formData.name,
+            password: formData.password,
+          },
+        });
+      } catch (error) {
+        if (isAxiosError(error)) {
+          const errorMessage = error.response?.data?.errors;
+          
+          if (errorMessage === "User already exists") {
+            try {
+              await signIn({
+                email: form.getValues("email"),
+                password: form.getValues("password"),
+              });
+              
+              router.replace("/");
+              return;
+            } catch (signInError) {
+              return Alert.alert("Este e-mail já está em uso. Tente fazer login manualmente.");
+            }
+          }
+
+          if (typeof errorMessage === 'string') {
+            const translations: Record<string, string> = {
+              "User already exists": "Usuário já cadastrado.",
+              "Invalid credentials": "E-mail ou senha inválidos.",
+            };
+
+            return Alert.alert(translations[errorMessage] || errorMessage);
+          }
+        }
+
+        Alert.alert("Erro ao criar a conta. Tente novamente.");
       }
-      Alert.alert("Erro ao criar a conta. Tente novamente.");
+    },
+    () => {
+      Alert.alert("Verifique se todos os campos foram preenchidos corretamente.");
     }
-  });
+  );
 
   const currentStep = steps[currentStepIndex];
   const isLastStep = currentStepIndex === steps.length - 1;

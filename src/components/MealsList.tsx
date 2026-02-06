@@ -127,7 +127,7 @@ export function MealsList() {
         },
       });
 
-      return data.meals;
+      return data.meals ?? [];
     },
   });
 

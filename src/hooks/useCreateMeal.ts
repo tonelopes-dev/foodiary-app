@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import * as FileSystem from "expo-file-system";
+import { FileSystemUploadType } from "expo-file-system";
 
 import { httpClient } from "@/services/httpClient";
 
@@ -24,7 +25,7 @@ export function useCreateMeal({ fileType, onSuccess }: CreateMealParams) {
 
       await FileSystem.uploadAsync(data.uploadURL, uri, {
         httpMethod: "PUT",
-        uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
+        uploadType: FileSystemUploadType.BINARY_CONTENT,
       });
 
       return { mealId: data.mealId };

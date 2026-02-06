@@ -8,6 +8,7 @@ import {
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
+import { ActivityIndicator, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -49,6 +50,14 @@ function RootLayout() {
       SplashScreen.hideAsync();
     }
   }, [loaded, error, isLoading]);
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#000" />
+      </View>
+    );
+  }
 
   if (!loaded && !error) {
     return null;
