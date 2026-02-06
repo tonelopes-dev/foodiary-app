@@ -123,7 +123,7 @@ export default function SignUp() {
     >
       <View className="flex-1 justify-between">
         <FormProvider {...form}>
-          <currentStep.Component />
+          <currentStep.Component onNext={handleNextStep} />
         </FormProvider>
 
         <View className="flex-row justify-between gap-4">

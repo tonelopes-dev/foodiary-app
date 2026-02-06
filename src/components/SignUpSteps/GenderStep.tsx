@@ -2,7 +2,7 @@ import { Controller, useFormContext } from "react-hook-form";
 import { OptionsSelector } from "@/components/OptionsSelector";
 import { SignUpFormData } from "@/components/SignUpSteps/signUpSchema";
 
-export function GenderStep() {
+export function GenderStep({ onNext }: { onNext?: () => void }) {
   const form = useFormContext<SignUpFormData>();
 
   return (
@@ -12,7 +12,10 @@ export function GenderStep() {
       render={({ field }) => (
         <OptionsSelector
           value={field.value}
-          onChange={field.onChange}
+          onChange={(value) => {
+            field.onChange(value);
+            onNext?.();
+          }}
           options={[
             {
               icon: "👨",
